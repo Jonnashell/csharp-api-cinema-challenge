@@ -1,6 +1,7 @@
 ﻿using api_cinema_challenge.DTOs;
 using api_cinema_challenge.Models;
 using api_cinema_challenge.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 
@@ -10,16 +11,18 @@ namespace api_cinema_challenge.Endpoints
     {
         public static void ConfigureCustomerEndpoint(this WebApplication app)
         {
-            app.MapGet("customers/", GetCustomers);
-            app.MapGet("customers/{id}", GetCustomerById);
-            app.MapPost("customers", CreateCustomer);
-            app.MapPut("customers", UpdateCustomer);
-            app.MapDelete("customers", DeleteCustomer);
+            var customerGroup = app.MapGroup("customers/").RequireAuthorization();
+            customerGroup.MapGet("/", GetCustomers);
+            customerGroup.MapGet("/{id}", GetCustomerById);
+            customerGroup.MapPost("", CreateCustomer);
+            customerGroup.MapPut("", UpdateCustomer);
+            customerGroup.MapDelete("", DeleteCustomer);
 
             // Customers
-            app.MapPost("customers/{customerId}/screenings/{screeningId}", CreateTicket);
-            app.MapGet("customers/{customerId}/screenings/{screeningId}", GetTickets);
+            customerGroup.MapPost("/{customerId}/screenings/{screeningId}", CreateTicket);
+            customerGroup.MapGet("/{customerId}/screenings/{screeningId}", GetTickets);
         }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetCustomers(IRepository repository)

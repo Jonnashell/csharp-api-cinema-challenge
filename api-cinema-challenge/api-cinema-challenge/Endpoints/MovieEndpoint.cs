@@ -1,6 +1,7 @@
 ﻿using api_cinema_challenge.DTOs;
 using api_cinema_challenge.Models;
 using api_cinema_challenge.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -11,15 +12,16 @@ namespace api_cinema_challenge.Endpoints
     {
         public static void ConfigureMovieEndpoint(this WebApplication app)
         {
-            app.MapGet("movies/", GetMovies);
-            //app.MapGet("movies/{id}", GetMovieById);
-            app.MapPost("movies", CreateMovie);
-            app.MapPut("movies", UpdateMovie);
-            app.MapDelete("movies", DeleteMovie);
+            var moviesGroup = app.MapGroup("/movies").RequireAuthorization();
+            moviesGroup.MapGet("", GetMovies);
+            //moviesGroup.MapGet("movies/{id}", GetMovieById);
+            moviesGroup.MapPost("", CreateMovie);
+            moviesGroup.MapPut("", UpdateMovie);
+            moviesGroup.MapDelete("movies", DeleteMovie);
 
             // Screenings
-            app.MapGet("movies/{id}/screenings", GetScreenings);
-            app.MapPost("movies/{id}/screenings", CreateScreening);
+            moviesGroup.MapGet("/{id}/screenings", GetScreenings);
+            moviesGroup.MapPost("/{id}/screenings", CreateScreening);
         }
 
         public static async Task<IResult> GetMovies(IRepository repository)

@@ -1,10 +1,11 @@
 ﻿using api_cinema_challenge.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace api_cinema_challenge.Data
 {
-    public class CinemaContext : DbContext
+    public class CinemaContext : IdentityUserContext<ApplicationUser>
     {
         private string _connectionString;
         public CinemaContext(DbContextOptions<CinemaContext> options) : base(options)
@@ -190,6 +191,7 @@ namespace api_cinema_challenge.Data
             modelBuilder.Entity<Customer>().HasData([customer, customer2, customer3, customer4]);
             modelBuilder.Entity<Screening>().HasData(new[] { screening1, screening2 });
             modelBuilder.Entity<Movie>().HasData(new[] { movie1, movie2, movie3, movie4 });
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Customer> Customers { get; set; }
